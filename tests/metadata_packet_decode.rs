@@ -1,11 +1,21 @@
 #![deny(warnings, clippy::all)]
 
-use babeltrace2_sys::internal_api::*;
-use babeltrace2_sys::{Logger, LoggingLevel};
-use std::fs;
+#[cfg(not(disable_internal_api_tests))]
+mod tests {
+    use babeltrace2_sys::internal_api::*;
+    use babeltrace2_sys::{Logger, LoggingLevel};
+    use std::fs;
 
-fn init_logging() {
+    fn init_logging() {
     let _ = env_logger::builder().is_test(true).try_init();
+    }
+}
+
+#[cfg(disable_internal_api_tests)]
+#[test]
+fn dummy_test() {
+    // This is a placeholder test that always passes when internal API tests are disabled
+    println!("Internal API tests are disabled when using system Babeltrace");
 }
 
 #[test]
