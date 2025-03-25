@@ -12,7 +12,7 @@ fn main() {
             .atleast_version("2.0.0")
             .probe("babeltrace2")
         {
-            Ok(babeltrace) => {
+            Ok(_babeltrace) => {
                 // Successfully found system Babeltrace
                 println!("cargo:rustc-cfg=use_system_babeltrace");
                 println!("cargo:warning=Using system-installed Babeltrace");
