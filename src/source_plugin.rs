@@ -208,35 +208,41 @@ macro_rules! source_plugin_descriptors {
             };
 
         #[used]
-        #[link_section = "__bt_plugin_descriptors"]
+        #[cfg_attr(not(macos_system_babeltrace), link_section = "__bt_plugin_descriptors")]
+        #[cfg_attr(macos_system_babeltrace, link_section = "__DATA,__bt_plugin_descriptors")]
         pub static PLUGIN_DESC_PTR: __bt_plugin_descriptor_ptr =
             __bt_plugin_descriptor_ptr(&PLUGIN_DESC);
 
         #[used]
-        #[link_section = "__bt_plugin_component_class_descriptors"]
+        #[cfg_attr(not(macos_system_babeltrace), link_section = "__bt_plugin_component_class_descriptors")]
+        #[cfg_attr(macos_system_babeltrace, link_section = "__DATA,__bt_plugin_component_class_descriptors")]
         pub static SOURCE_COMP_DESC_PTR: __bt_plugin_component_class_descriptor_ptr =
             __bt_plugin_component_class_descriptor_ptr(&SOURCE_COMP_DESC);
 
         #[used]
-        #[link_section = "__bt_plugin_component_class_descriptor_attributes"]
+        #[cfg_attr(not(macos_system_babeltrace), link_section = "__bt_plugin_component_class_descriptor_attributes")]
+        #[cfg_attr(macos_system_babeltrace, link_section = "__DATA,__bt_plugin_component_class_descriptor_attributes")]
         pub static SOURCE_COMP_CLASS_INIT_ATTR_PTR:
             __bt_plugin_component_class_descriptor_attribute_ptr =
             __bt_plugin_component_class_descriptor_attribute_ptr(&SOURCE_COMP_CLASS_INIT_ATTR);
 
         #[used]
-        #[link_section = "__bt_plugin_component_class_descriptor_attributes"]
+        #[cfg_attr(not(macos_system_babeltrace), link_section = "__bt_plugin_component_class_descriptor_attributes")]
+        #[cfg_attr(macos_system_babeltrace, link_section = "__DATA,__bt_plugin_component_class_descriptor_attributes")]
         pub static SOURCE_COMP_CLASS_FINI_ATTR_PTR:
             __bt_plugin_component_class_descriptor_attribute_ptr =
             __bt_plugin_component_class_descriptor_attribute_ptr(&SOURCE_COMP_CLASS_FINI_ATTR);
 
         #[used]
-        #[link_section = "__bt_plugin_component_class_descriptor_attributes"]
+        #[cfg_attr(not(macos_system_babeltrace), link_section = "__bt_plugin_component_class_descriptor_attributes")]
+        #[cfg_attr(macos_system_babeltrace, link_section = "__DATA,__bt_plugin_component_class_descriptor_attributes")]
         pub static SOURCE_COMP_CLASS_MSG_ITER_INIT_PTR:
             __bt_plugin_component_class_descriptor_attribute_ptr =
             __bt_plugin_component_class_descriptor_attribute_ptr(&SOURCE_COMP_CLASS_MSG_ITER_INIT_ATTR);
 
         #[used]
-        #[link_section = "__bt_plugin_component_class_descriptor_attributes"]
+        #[cfg_attr(not(macos_system_babeltrace), link_section = "__bt_plugin_component_class_descriptor_attributes")]
+        #[cfg_attr(macos_system_babeltrace, link_section = "__DATA,__bt_plugin_component_class_descriptor_attributes")]
         pub static SOURCE_COMP_CLASS_MSG_ITER_FINI_PTR:
             __bt_plugin_component_class_descriptor_attribute_ptr =
             __bt_plugin_component_class_descriptor_attribute_ptr(&SOURCE_COMP_CLASS_MSG_ITER_FINI_ATTR);

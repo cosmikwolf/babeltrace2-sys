@@ -21,6 +21,12 @@ fn main() {
                 println!("cargo:rustc-link-lib=dylib=babeltrace2");
                 println!("cargo:rustc-link-lib=dylib=babeltrace2-ctf-writer");
 
+                // Check if we're on macOS
+                if cfg!(target_os = "macos") {
+                    println!("cargo:rustc-cfg=macos_system_babeltrace");
+                    println!("cargo:warning=Using macOS-specific section handling for system Babeltrace");
+                }
+
                 // We still need the dependencies
                 link_dependencies(false); // false = don't use static linking for dependencies
             }
