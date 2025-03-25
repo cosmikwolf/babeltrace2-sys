@@ -16,6 +16,7 @@ fn main() {
                 // Successfully found system Babeltrace
                 println!("cargo:rustc-cfg=use_system_babeltrace");
                 println!("cargo:warning=Using system-installed Babeltrace");
+                println!("cargo:rustc-check-cfg=cfg(use_system_babeltrace)");
 
                 // For dynamic linking to system babeltrace
                 println!("cargo:rustc-link-lib=dylib=babeltrace2");
