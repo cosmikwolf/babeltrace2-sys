@@ -240,27 +240,32 @@ pub mod proxy_plugin_descriptors {
     use babeltrace2_sys::proxy_plugin_descriptors::*;
 
     #[used]
-    #[link_section = "__bt_plugin_descriptors"]
+    #[cfg_attr(not(macos_system_babeltrace), link_section = "__bt_plugin_descriptors")]
+    #[cfg_attr(macos_system_babeltrace, link_section = "__DATA,__bt_plugins")]
     pub static PLUGIN_DESC_PTR: __bt_plugin_descriptor_ptr =
         __bt_plugin_descriptor_ptr(&PLUGIN_DESC);
 
     #[used]
-    #[link_section = "__bt_plugin_component_class_descriptors"]
+    #[cfg_attr(not(macos_system_babeltrace), link_section = "__bt_plugin_component_class_descriptors")]
+    #[cfg_attr(macos_system_babeltrace, link_section = "__DATA,__bt_comp_desc")]
     pub static SINK_COMP_DESC_PTR: __bt_plugin_component_class_descriptor_ptr =
         __bt_plugin_component_class_descriptor_ptr(&SINK_COMP_DESC);
 
     #[used]
-    #[link_section = "__bt_plugin_component_class_descriptor_attributes"]
+    #[cfg_attr(not(macos_system_babeltrace), link_section = "__bt_plugin_component_class_descriptor_attributes")]
+    #[cfg_attr(macos_system_babeltrace, link_section = "__DATA,__bt_comp_attr")]
     pub static SINK_COMP_CLASS_INIT_ATTR_PTR: __bt_plugin_component_class_descriptor_attribute_ptr =
         __bt_plugin_component_class_descriptor_attribute_ptr(&SINK_COMP_CLASS_INIT_ATTR);
 
     #[used]
-    #[link_section = "__bt_plugin_component_class_descriptor_attributes"]
+    #[cfg_attr(not(macos_system_babeltrace), link_section = "__bt_plugin_component_class_descriptor_attributes")]
+    #[cfg_attr(macos_system_babeltrace, link_section = "__DATA,__bt_comp_attr")]
     pub static SINK_COMP_CLASS_FINI_ATTR_PTR: __bt_plugin_component_class_descriptor_attribute_ptr =
         __bt_plugin_component_class_descriptor_attribute_ptr(&SINK_COMP_CLASS_FINI_ATTR);
 
     #[used]
-    #[link_section = "__bt_plugin_component_class_descriptor_attributes"]
+    #[cfg_attr(not(macos_system_babeltrace), link_section = "__bt_plugin_component_class_descriptor_attributes")]
+    #[cfg_attr(macos_system_babeltrace, link_section = "__DATA,__bt_comp_attr")]
     pub static SINK_COMP_CLASS_GRAPH_CONF_ATTR_PTR:
         __bt_plugin_component_class_descriptor_attribute_ptr =
         __bt_plugin_component_class_descriptor_attribute_ptr(&SINK_COMP_CLASS_GRAPH_CONF_ATTR);
