@@ -1,6 +1,43 @@
 use std::{env, fs};
 
 fn main() {
+    // Check if we should use the system-installed Babeltrace via environment variable
+    let use_system_babeltrace = env::var("BABELTRACE_USE_SYSTEM")
+        .map(|val| val.to_lowercase() != "false" && val != "0")
+        .unwrap_or(false);
+
+    if use_system_babeltrace {
+        // Try to find system-installed Babeltrace using pkg-config
+        match pkg_config::Config::new()
+            .atleast_version("2.0.0")
+            .probe("babeltrace2")
+        {
+            Ok(babeltrace) => {
+                // Successfully found system Babeltrace
+                println!("cargo:rustc-cfg=use_system_babeltrace");
+                println!("cargo:warning=Using system-installed Babeltrace");
+                
+                // For dynamic linking to system babeltrace
+                println!("cargo:rustc-link-lib=dylib=babeltrace2");
+                println!("cargo:rustc-link-lib=dylib=babeltrace2-ctf-writer");
+                
+                // We still need the dependencies
+                link_dependencies(false); // false = don't use static linking for dependencies
+                return;
+            }
+            Err(e) => {
+                println!("cargo:warning=Failed to find system Babeltrace: {}", e);
+                println!("cargo:warning=Falling back to bundled version");
+            }
+        }
+    }
+
+    // If we get here, we're building from source
+    build_from_source();
+    link_dependencies(true); // true = use static linking for dependencies
+}
+
+fn build_from_source() {
     // Setup pkg-config if cross-compiling
     let host_triple = env::var("HOST").unwrap();
     let target_triple = env::var("TARGET").unwrap();
@@ -40,27 +77,6 @@ fn main() {
 
     let babeltrace_path = config.build();
 
-    let glib2 = pkg_config::Config::new()
-        .atleast_version("2.0.0")
-        .statik(true)
-        .probe("glib-2.0")
-        .expect("Failed to find glib-2.0 pkg-config");
-
-    let gmod2 = pkg_config::Config::new()
-        .atleast_version("2.0.0")
-        .statik(true)
-        .probe("gmodule-2.0")
-        .expect("Failed to find gmodule-2.0 pkg-config");
-
-    let pcre = pkg_config::Config::new()
-        .statik(true)
-        .probe("libpcre")
-        .expect("Failed to find libpcre pkg-config");
-
-    if cfg!(feature = "test") {
-        println!("cargo:rustc-link-arg=-Wl,--allow-multiple-definition");
-    }
-
     println!(
         "cargo:rustc-link-search=native={}/lib",
         babeltrace_path.display()
@@ -85,22 +101,68 @@ fn main() {
     );
     println!("cargo:rustc-link-lib=static=babeltrace-plugin-utils");
     println!("cargo:rustc-link-lib=static=babeltrace-plugin-ctf");
+}
+
+fn link_dependencies(use_static: bool) {
+    let mut glib2_config = pkg_config::Config::new();
+    glib2_config.atleast_version("2.0.0");
+    if use_static {
+        glib2_config.statik(true);
+    }
+    let glib2 = glib2_config
+        .probe("glib-2.0")
+        .expect("Failed to find glib-2.0 pkg-config");
+
+    let mut gmod2_config = pkg_config::Config::new();
+    gmod2_config.atleast_version("2.0.0");
+    if use_static {
+        gmod2_config.statik(true);
+    }
+    let gmod2 = gmod2_config
+        .probe("gmodule-2.0")
+        .expect("Failed to find gmodule-2.0 pkg-config");
+
+    let mut pcre_config = pkg_config::Config::new();
+    if use_static {
+        pcre_config.statik(true);
+    }
+    let pcre = pcre_config
+        .probe("libpcre")
+        .expect("Failed to find libpcre pkg-config");
+
+    if cfg!(feature = "test") {
+        println!("cargo:rustc-link-arg=-Wl,--allow-multiple-definition");
+    }
 
     println!(
         "cargo:rustc-link-search=native={}",
         gmod2.link_paths[0].display()
     );
-    println!("cargo:rustc-link-lib=static={}", gmod2.libs[0]);
+    if use_static {
+        println!("cargo:rustc-link-lib=static={}", gmod2.libs[0]);
+    } else {
+        println!("cargo:rustc-link-lib={}", gmod2.libs[0]);
+    }
+    
     println!(
         "cargo:rustc-link-search=native={}",
         glib2.link_paths[0].display()
     );
-    println!("cargo:rustc-link-lib=static={}", glib2.libs[0]);
+    if use_static {
+        println!("cargo:rustc-link-lib=static={}", glib2.libs[0]);
+    } else {
+        println!("cargo:rustc-link-lib={}", glib2.libs[0]);
+    }
+    
     println!(
         "cargo:rustc-link-search=native={}",
         pcre.link_paths[0].display()
     );
-    println!("cargo:rustc-link-lib=static={}", pcre.libs[0]);
+    if use_static {
+        println!("cargo:rustc-link-lib=static={}", pcre.libs[0]);
+    } else {
+        println!("cargo:rustc-link-lib={}", pcre.libs[0]);
+    }
 
     println!("cargo:rustc-link-lib=dylib=c");
 }

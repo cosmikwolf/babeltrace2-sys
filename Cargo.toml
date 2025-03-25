@@ -13,6 +13,7 @@ documentation = "https://docs.rs/babeltrace2-sys"
 
 [features]
 test = []
+system-babeltrace = []  # Enable to force use of system-installed Babeltrace
 
 [build-dependencies]
 autotools = "0.2"
