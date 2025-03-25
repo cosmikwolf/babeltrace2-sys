@@ -233,6 +233,7 @@ source_plugin_descriptors!(ExamplePlugin);
 pub mod utils_plugin_descriptors {
     use babeltrace2_sys::ffi::*;
 
+    #[cfg(not(use_system_babeltrace))]
     #[link(
         name = "babeltrace-plugin-utils",
         kind = "static",
@@ -241,16 +242,27 @@ pub mod utils_plugin_descriptors {
     extern "C" {
         pub static __bt_plugin_descriptor_auto_ptr: *const __bt_plugin_descriptor;
     }
+
+    #[cfg(use_system_babeltrace)]
+    extern "C" {
+        pub static __bt_plugin_descriptor_auto_ptr: *const __bt_plugin_descriptor;
+    }
 }
 
 pub mod ctf_plugin_descriptors {
     use babeltrace2_sys::ffi::*;
 
+    #[cfg(not(use_system_babeltrace))]
     #[link(
         name = "babeltrace-plugin-ctf",
         kind = "static",
         modifiers = "+whole-archive"
     )]
+    extern "C" {
+        pub static __bt_plugin_descriptor_auto_ptr: *const __bt_plugin_descriptor;
+    }
+
+    #[cfg(use_system_babeltrace)]
     extern "C" {
         pub static __bt_plugin_descriptor_auto_ptr: *const __bt_plugin_descriptor;
     }

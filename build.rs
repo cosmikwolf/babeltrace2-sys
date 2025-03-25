@@ -31,6 +31,7 @@ fn main() {
                 // Disable internal API tests when using system library
                 println!("cargo:rustc-cfg=disable_internal_api_tests");
                 println!("cargo:warning=Internal API tests disabled when using system Babeltrace");
+                println!("cargo:rustc-check-cfg=cfg(disable_internal_api_tests)");
 
                 // We still need the dependencies
                 link_dependencies(false); // false = don't use static linking for dependencies
