@@ -16,25 +16,23 @@ fn main() {
                 // Successfully found system Babeltrace
                 println!("cargo:rustc-cfg=use_system_babeltrace");
                 println!("cargo:warning=Using system-installed Babeltrace");
-                
+
                 // For dynamic linking to system babeltrace
                 println!("cargo:rustc-link-lib=dylib=babeltrace2");
                 println!("cargo:rustc-link-lib=dylib=babeltrace2-ctf-writer");
-                
+
                 // We still need the dependencies
                 link_dependencies(false); // false = don't use static linking for dependencies
-                return;
             }
             Err(e) => {
                 println!("cargo:warning=Failed to find system Babeltrace: {}", e);
                 println!("cargo:warning=Falling back to bundled version");
             }
         }
+    } else {
+        build_from_source();
+        link_dependencies(true); // true = use static linking for dependencies
     }
-
-    // If we get here, we're building from source
-    build_from_source();
-    link_dependencies(true); // true = use static linking for dependencies
 }
 
 fn build_from_source() {
@@ -143,7 +141,7 @@ fn link_dependencies(use_static: bool) {
     } else {
         println!("cargo:rustc-link-lib={}", gmod2.libs[0]);
     }
-    
+
     println!(
         "cargo:rustc-link-search=native={}",
         glib2.link_paths[0].display()
@@ -153,7 +151,7 @@ fn link_dependencies(use_static: bool) {
     } else {
         println!("cargo:rustc-link-lib={}", glib2.libs[0]);
     }
-    
+
     println!(
         "cargo:rustc-link-search=native={}",
         pcre.link_paths[0].display()
